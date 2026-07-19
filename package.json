@@ -92,6 +92,7 @@
     "typescript": "^5.9.3"
   },
   "dependencies": {
+    "firebase": "^12.16.0",
     "mediabunny": "^1.46.0"
   }
 }

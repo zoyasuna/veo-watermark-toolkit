@@ -1,6 +1,6 @@
 {
-  "name": "Penghapus Watermark Video",
-  "description": "Otomasi penghapus watermark video dengan antarmuka dan instruksi Bahasa Indonesia.",
+  "name": "git44",
+  "description": "git44 - Aplikasi Penghapus Watermark Video Premium Full Stack dengan Autentikasi dan Sistem Lisensi.",
   "requestFramePermissions": [],
   "majorCapabilities": [
     "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"

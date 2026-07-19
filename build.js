@@ -348,10 +348,8 @@ async function serveStaticDevDist(rootDir = 'dist', defaultPort = 3000) {
       res.end('Bad Request');
       return;
     }
-    // In dev mode, expose the internal single-image debug harness at `/`
-    // instead of the public landing entry. The landing page still ships to
-    // `dist/index.html` for prod deploys and can be reached at `/index.html`.
-    const devHarnessPath = '/dev-preview.html';
+    // Serve the public landing entry at `/`
+    const devHarnessPath = '/index.html';
     const requestPath =
       urlPath === '/' || urlPath === ''
         ? devHarnessPath
@@ -513,6 +511,21 @@ const extensionServiceWorkerCtx = await esbuild.context({
 });
 
 console.log(`🚀 Starting build process... [${isProd ? 'PRODUCTION' : 'DEVELOPMENT'}]`);
+
+// Download Tailwind CSS Play CDN locally to prevent CDN block inside iframes
+try {
+  console.log('📥 Downloading Tailwind CSS Play CDN to local public/ directory...');
+  const res = await fetch('https://cdn.tailwindcss.com');
+  if (res.ok) {
+    const text = await res.text();
+    writeFileSync('public/tailwind.min.js', text);
+    console.log('✅ Tailwind CSS Play CDN downloaded locally!');
+  } else {
+    console.warn(`⚠️ Failed to download Tailwind CSS, status: ${res.status}. Falling back to existing file if any.`);
+  }
+} catch (err) {
+  console.error('❌ Failed to download Tailwind CSS locally. Error:', err.message || String(err));
+}
 
 cleanDistBuildOutputs();
 mkdirSync('dist/userscript', { recursive: true });
