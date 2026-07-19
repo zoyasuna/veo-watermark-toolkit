@@ -162,6 +162,27 @@
 
     <!-- Main Container -->
     <main class="flex-1 p-6 lg:p-8 space-y-6 max-w-7xl w-full mx-auto">
+      <!-- Iframe Warning Box (Global) -->
+      <div id="iframeWarningBox" class="hidden p-5 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-300 text-sm leading-relaxed space-y-3 mb-6">
+        <span class="font-extrabold flex items-center gap-2 text-amber-400">
+          <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+          </svg>
+          Peringatan Penting: Menjalankan di dalam Frame Pratinjau (Iframe Preview)
+        </span>
+        <p>
+          Beberapa fitur (seperti pengunduhan video dan verifikasi kredensial) mungkin terhambat karena kebijakan browser yang memblokir cookie pihak ketiga (third-party cookies) di dalam frame AI Studio ini.
+        </p>
+        <div class="flex flex-wrap items-center gap-3 pt-1">
+          <a href="" id="openInNewTabBtn" target="_blank" class="px-5 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 active:scale-95 text-slate-950 font-bold transition-all inline-flex items-center gap-2 shadow-lg shadow-amber-500/10">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+            </svg>
+            Buka di Tab Baru (Sangat Disarankan)
+          </a>
+          <span class="text-xs text-amber-400/80">Membuka di tab baru akan mengaktifkan fungsionalitas penuh aplikasi dan menghindari semua masalah koneksi!</span>
+        </div>
+      </div>
 
       <!-- ==================== VIEW 1: DASHBOARD ==================== -->
       <section id="view-dashboard" class="hidden space-y-6 animate-fade-in">

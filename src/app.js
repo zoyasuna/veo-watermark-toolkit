@@ -765,7 +765,8 @@ if (processVideoBtn) {
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ url, clientSide: true })
+        body: JSON.stringify({ url, clientSide: true }),
+        credentials: 'include'
       });
 
       const data = await response.json();
@@ -779,7 +780,9 @@ if (processVideoBtn) {
       updateProgressOnly(25, 'step2', ['step1']);
 
       const proxyUrl = `/api/proxy-video?url=${encodeURIComponent(videoDirectUrl)}`;
-      const videoResponse = await fetch(proxyUrl);
+      const videoResponse = await fetch(proxyUrl, {
+        credentials: 'include'
+      });
       if (!videoResponse.ok) {
         let errorDetail = "";
         try {
@@ -928,6 +931,21 @@ function setImageStatus(msg, type = 'info') {
 async function init() {
     try {
         showLoading(TEXT.loading);
+
+        // Check if running inside iframe and show cookie block warning
+        try {
+            const isIframe = window.self !== window.top;
+            if (isIframe) {
+                const warnBox = document.getElementById('iframeWarningBox');
+                const openBtn = document.getElementById('openInNewTabBtn');
+                if (warnBox) warnBox.classList.remove('hidden');
+                if (openBtn) {
+                    openBtn.href = window.location.href;
+                }
+            }
+        } catch (e) {
+            console.warn('Iframe check warning:', e);
+        }
 
         if (canUseWatermarkWorker()) {
             try {
