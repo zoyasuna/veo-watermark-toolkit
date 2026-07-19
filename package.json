@@ -1,0 +1,97 @@
+{
+  "name": "@pilio/gemini-watermark-remover",
+  "description": "Automatically removes watermarks from Gemini AI generated images",
+  "version": "1.0.31",
+  "author": "GargantuaX",
+  "sideEffects": false,
+  "files": [
+    "bin/",
+    "skills/",
+    "src/cli/",
+    "src/core/",
+    "src/runtime/",
+    "src/sdk/",
+    "src/shared/",
+    "src/userscript/",
+    "dist/video-preview.html",
+    "dist/video-app.js",
+    "dist/models/allenk-fdncnn/onnx-manifest.json",
+    "dist/models/allenk-fdncnn/model_core_fp32_86x74.onnx",
+    "dist/models/allenk-fdncnn/model_core_fp32_104.onnx",
+    "dist/models/allenk-fdncnn/model_core_fp32_200.onnx",
+    "dist/onnxruntime/ort-wasm-simd-threaded.js",
+    "dist/onnxruntime/ort-wasm-simd-threaded.wasm",
+    "dist/onnxruntime/ort-wasm-simd-threaded.asyncify.mjs",
+    "dist/onnxruntime/ort-wasm-simd-threaded.asyncify.wasm",
+    "README.md",
+    "README_zh.md",
+    "LICENSE"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/GargantuaX/gemini-watermark-remover.git"
+  },
+  "homepage": "https://geminiwatermarkremover.io/",
+  "license": "MIT",
+  "type": "module",
+  "bin": {
+    "gwr": "./bin/gwr.mjs"
+  },
+  "types": "./src/sdk/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./src/sdk/index.d.ts",
+      "import": "./src/sdk/index.js"
+    },
+    "./browser": {
+      "types": "./src/sdk/browser.d.ts",
+      "import": "./src/sdk/browser.js"
+    },
+    "./image-data": {
+      "types": "./src/sdk/image-data.d.ts",
+      "import": "./src/sdk/image-data.js"
+    },
+    "./node": {
+      "types": "./src/sdk/node.d.ts",
+      "import": "./src/sdk/node.js"
+    },
+    "./video": {
+      "types": "./src/sdk/video.d.ts",
+      "import": "./src/sdk/video.js"
+    },
+    "./runtime-browser": {
+      "types": "./src/runtime/browser.d.ts",
+      "import": "./src/runtime/browser.js"
+    },
+    "./runtime-userscript": {
+      "types": "./src/runtime/userscript.d.ts",
+      "import": "./src/runtime/userscript.js"
+    }
+  },
+  "scripts": {
+    "dev": "node build.js",
+    "build": "node build.js --prod",
+    "export:video-backend": "node scripts/export-video-backend-variant.js",
+    "cli:smoke": "node bin/gwr.mjs --help",
+    "serve": "npx serve dist"
+  },
+  "peerDependencies": {
+    "sharp": "^0.34.5"
+  },
+  "peerDependenciesMeta": {
+    "sharp": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@types/node": "^24.6.0",
+    "esbuild": "^0.24.0",
+    "onnxruntime-web": "^1.26.0",
+    "playwright": "^1.58.2",
+    "sharp": "^0.34.5",
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "mediabunny": "^1.46.0"
+  }
+}

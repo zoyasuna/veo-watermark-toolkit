@@ -1,0 +1,1228 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Otomasi Penghapus Watermark Video - Premium</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #fafbfc;
+      --panel: #ffffff;
+      --panel-soft: #f8fafc;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --border-hover: #cbd5e1;
+      --primary: #0f172a;
+      --primary-hover: #1e293b;
+      --accent: #10b981;
+      --accent-hover: #059669;
+      --accent-soft: rgba(16, 185, 129, 0.08);
+      --accent-glowing: rgba(16, 185, 129, 0.25);
+      --danger: #ef4444;
+      --danger-soft: #fef2f2;
+      --danger-border: #fca5a5;
+      --success: #10b981;
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 18px;
+      --radius-xl: 24px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background-image: 
+        radial-gradient(at 0% 0%, rgba(16, 185, 129, 0.03) 0px, transparent 50%),
+        radial-gradient(at 100% 0%, rgba(15, 23, 42, 0.03) 0px, transparent 50%);
+    }
+
+    .shell {
+      width: min(880px, calc(100% - 40px));
+      margin: 0 auto;
+      padding: 48px 0;
+      flex: 1;
+    }
+
+    /* Header */
+    header {
+      text-align: center;
+      margin-bottom: 40px;
+      animation: fadeIn 0.6s ease-out;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--accent-soft);
+      color: var(--accent-hover);
+      padding: 6px 14px;
+      border-radius: 99px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+      border: 1px solid rgba(16, 185, 129, 0.15);
+    }
+
+    .badge-dot {
+      width: 6px;
+      height: 6px;
+      background-color: var(--accent);
+      border-radius: 50%;
+      animation: pulseDot 2s infinite;
+    }
+
+    h1 {
+      font-size: 2.25rem;
+      font-weight: 850;
+      letter-spacing: -0.03em;
+      color: var(--primary);
+      line-height: 1.2;
+      margin-bottom: 12px;
+    }
+
+    header p {
+      color: var(--text-muted);
+      font-size: 1.05rem;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    /* Main Card Workspace */
+    .workspace-card {
+      background: var(--panel);
+      border-radius: var(--radius-xl);
+      border: 1px solid var(--border);
+      box-shadow: 
+        0 1px 3px rgba(0, 0, 0, 0.02),
+        0 10px 30px -5px rgba(15, 23, 42, 0.04),
+        0 20px 40px -15px rgba(15, 23, 42, 0.03);
+      padding: 40px;
+      margin-bottom: 32px;
+      transition: border-color 0.3s, box-shadow 0.3s;
+      animation: slideUp 0.6s ease-out;
+    }
+
+    .form-group-label {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Input wrapper & design */
+    .input-row {
+      position: relative;
+      display: flex;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .input-container {
+      position: relative;
+      flex: 1;
+      display: flex;
+      align-items: center;
+    }
+
+    .input-icon-left {
+      position: absolute;
+      left: 16px;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      pointer-events: none;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      height: 54px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border);
+      background: var(--panel-soft);
+      color: var(--text);
+      padding: 0 44px 0 46px;
+      font-size: 0.95rem;
+      font-weight: 500;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    input[type="text"]:hover {
+      border-color: var(--border-hover);
+      background: #ffffff;
+    }
+
+    input[type="text"]:focus {
+      outline: none;
+      border-color: var(--accent);
+      background: #ffffff;
+      box-shadow: 0 0 0 4px var(--accent-glowing);
+    }
+
+    .clear-btn {
+      position: absolute;
+      right: 14px;
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      padding: 4px;
+      border-radius: 50%;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      transition: background-color 0.2s, color 0.2s;
+    }
+
+    .clear-btn:hover {
+      background: var(--border);
+      color: var(--primary);
+    }
+
+    /* Example presets */
+    .examples-box {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 32px;
+      font-size: 0.85rem;
+    }
+
+    .examples-label {
+      color: var(--text-muted);
+      font-weight: 600;
+      margin-right: 4px;
+    }
+
+    .example-tag {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      color: var(--primary);
+      padding: 6px 14px;
+      border-radius: 99px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+
+    .example-tag:hover {
+      background: var(--panel-soft);
+      border-color: var(--border-hover);
+      transform: translateY(-1px);
+    }
+
+    .example-tag:active {
+      transform: translateY(0);
+    }
+
+    /* Buttons */
+    .primary-btn {
+      height: 54px;
+      padding: 0 28px;
+      border-radius: var(--radius-md);
+      border: none;
+      background: var(--accent);
+      color: #ffffff;
+      font-weight: 700;
+      font-size: 1rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      white-space: nowrap;
+    }
+
+    .primary-btn:hover:not(:disabled) {
+      background: var(--accent-hover);
+      transform: translateY(-1.5px);
+      box-shadow: 0 6px 16px rgba(16, 185, 129, 0.3);
+    }
+
+    .primary-btn:active:not(:disabled) {
+      transform: translateY(0);
+    }
+
+    .primary-btn:disabled {
+      background: var(--border);
+      color: var(--text-muted);
+      box-shadow: none;
+      cursor: not-allowed;
+    }
+
+    /* Stepper System (Interactive Progress) */
+    .progress-stepper {
+      background: var(--panel-soft);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 24px;
+      margin-top: 24px;
+      display: none;
+      animation: fadeIn 0.3s ease-out;
+    }
+
+    .stepper-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 18px;
+    }
+
+    .stepper-title {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .stepper-percent {
+      font-size: 0.85rem;
+      font-weight: 800;
+      color: var(--accent-hover);
+      background: var(--accent-soft);
+      padding: 2px 8px;
+      border-radius: 6px;
+    }
+
+    .bar-outer {
+      height: 6px;
+      width: 100%;
+      background: var(--border);
+      border-radius: 99px;
+      overflow: hidden;
+      margin-bottom: 24px;
+    }
+
+    .bar-inner {
+      height: 100%;
+      width: 0%;
+      background: var(--accent);
+      border-radius: 99px;
+      transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .steps-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .step-item {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+      opacity: 0.4;
+      transition: opacity 0.3s;
+    }
+
+    .step-item.active {
+      opacity: 1;
+    }
+
+    .step-item.completed {
+      opacity: 0.85;
+    }
+
+    .step-indicator {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 2px;
+      transition: all 0.3s;
+    }
+
+    .step-item.active .step-indicator {
+      background: var(--accent-soft);
+      border: 2px solid var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-glowing);
+    }
+
+    .step-item.completed .step-indicator {
+      background: var(--accent);
+    }
+
+    .step-icon-active {
+      width: 8px;
+      height: 8px;
+      background: var(--accent);
+      border-radius: 50%;
+      animation: pulseDot 1.5s infinite;
+    }
+
+    .step-icon-completed {
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .step-number {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--text-muted);
+    }
+
+    .step-item.active .step-number {
+      display: none;
+    }
+    .step-item.completed .step-number {
+      display: none;
+    }
+
+    .step-details {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .step-name {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .step-desc {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    /* Error and General Status Panels */
+    .status-panel {
+      margin-top: 24px;
+      padding: 20px;
+      border-radius: var(--radius-md);
+      display: none;
+      animation: slideUp 0.3s ease-out;
+    }
+
+    .status-panel.error {
+      background: var(--danger-soft);
+      border: 1px solid var(--danger-border);
+      color: var(--danger);
+    }
+
+    .status-panel-content {
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+    }
+
+    .status-panel-icon {
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .status-panel-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .status-panel-desc {
+      font-size: 0.85rem;
+      opacity: 0.9;
+    }
+
+    /* Result Preview Container */
+    .result-section {
+      margin-top: 40px;
+      display: none;
+      animation: fadeIn 0.5s ease-out;
+    }
+
+    .result-title {
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: var(--primary);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .video-card-frame {
+      position: relative;
+      background: #090d16;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      aspect-ratio: 16 / 9;
+      box-shadow: 
+        0 1px 2px rgba(0, 0, 0, 0.05),
+        0 20px 40px -10px rgba(15, 23, 42, 0.3);
+      margin-bottom: 24px;
+      border: 1px solid rgba(15, 23, 42, 0.15);
+    }
+
+    .video-card-frame::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 40%;
+      background: linear-gradient(180deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0) 100%);
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    video {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+    }
+
+    .button-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      justify-content: center;
+    }
+
+    .action-btn {
+      height: 50px;
+      padding: 0 24px;
+      border-radius: var(--radius-md);
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+
+    .action-btn.primary {
+      background: var(--primary);
+      color: #ffffff;
+      border: none;
+      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.15);
+    }
+
+    .action-btn.primary:hover {
+      background: var(--primary-hover);
+      transform: translateY(-1.5px);
+      box-shadow: 0 6px 16px rgba(15, 23, 42, 0.25);
+    }
+
+    .action-btn.secondary {
+      background: #ffffff;
+      color: var(--primary);
+      border: 1px solid var(--border);
+    }
+
+    .action-btn.secondary:hover {
+      background: var(--panel-soft);
+      border-color: var(--border-hover);
+      transform: translateY(-1.5px);
+    }
+
+    .action-btn:active {
+      transform: translateY(0);
+    }
+
+    /* Copied toast helper badge */
+    .toast-badge {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(10px);
+      background: var(--primary);
+      color: #ffffff;
+      padding: 10px 20px;
+      border-radius: 99px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.3);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      z-index: 9999;
+    }
+
+    .toast-badge.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* Bento Grid for Guidelines and Features */
+    .bento-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      margin-bottom: 40px;
+      animation: slideUp 0.8s ease-out;
+    }
+
+    @media (max-width: 768px) {
+      .bento-grid {
+        grid-template-columns: 1fr;
+      }
+      .input-row {
+        flex-direction: column;
+      }
+      .primary-btn {
+        width: 100%;
+      }
+    }
+
+    .bento-card {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 28px;
+      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.01);
+    }
+
+    .bento-card-title {
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: var(--primary);
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .guide-steps {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .guide-step-item {
+      display: flex;
+      gap: 14px;
+    }
+
+    .guide-step-num {
+      width: 24px;
+      height: 24px;
+      background: var(--accent-soft);
+      color: var(--accent-hover);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      font-weight: 800;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .guide-step-content h4 {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .guide-step-content p {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .features-list {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 14px;
+    }
+
+    .feature-item {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+    }
+
+    .feature-icon {
+      color: var(--accent);
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .feature-text h4 {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .feature-text p {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .footer-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 600;
+      font-size: 0.8rem;
+    }
+
+    .footer-status-dot {
+      width: 8px;
+      height: 8px;
+      background-color: var(--accent);
+      border-radius: 50%;
+      box-shadow: 0 0 8px var(--accent);
+    }
+
+    /* Animations */
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes pulseDot {
+      0% { transform: scale(0.9); opacity: 0.5; box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+      70% { transform: scale(1.1); opacity: 1; box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+      100% { transform: scale(0.9); opacity: 0.5; box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header>
+      <div class="badge">
+        <span class="badge-dot"></span>
+        Sistem Server Premium v1.3
+      </div>
+      <h1>Penghapus Watermark Video</h1>
+      <p>Otomatisasi pembersih watermark video dengan pengunduh internal berkecepatan tinggi.</p>
+    </header>
+
+    <main>
+      <div class="workspace-card" id="mainWorkspace">
+        <div class="form-group-label">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+            <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+          </svg>
+          Masukkan Tautan Video Google Labs Flow atau MP4
+        </div>
+
+        <div class="input-row">
+          <div class="input-container">
+            <div class="input-icon-left">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+            </div>
+            <input type="text" id="videoUrlInput" placeholder="Tempel (paste) URL video di sini..." autocomplete="off" />
+            <button class="clear-btn" id="clearInputBtn" title="Bersihkan">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
+          </div>
+          <button class="primary-btn" id="processVideoBtn">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="5 3 19 12 5 21 5 3"></polygon>
+            </svg>
+            Bersihkan Video
+          </button>
+        </div>
+
+        <!-- Examples section (UX Booster) -->
+        <div class="examples-box">
+          <span class="examples-label">Contoh Tautan Instan:</span>
+          <button class="example-tag" data-url="https://labs.google/fx/tools/flow/shared/video/22ce9101-8447-47fe-a7bf-6817871c5507">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"></rect>
+              <line x1="7" y1="2" x2="7" y2="22"></line>
+              <line x1="17" y1="2" x2="17" y2="22"></line>
+              <line x1="2" y1="12" x2="22" y2="12"></line>
+              <line x1="2" y1="7" x2="7" y2="7"></line>
+              <line x1="2" y1="17" x2="7" y2="17"></line>
+              <line x1="17" y1="17" x2="22" y2="17"></line>
+              <line x1="17" y1="7" x2="22" y2="7"></line>
+            </svg>
+            Video Labs Google (16:9)
+          </button>
+        </div>
+
+        <!-- Interactive Stepper Loader -->
+        <div class="progress-stepper" id="progressStepper">
+          <div class="stepper-header">
+            <div class="stepper-title">
+              <svg class="step-icon-active" style="width: 14px; height: 14px;" viewBox="0 0 24 24"></svg>
+              <span>Sedang Memproses Permintaan Server</span>
+            </div>
+            <span class="stepper-percent" id="stepperPercent">0%</span>
+          </div>
+
+          <div class="bar-outer">
+            <div class="bar-inner" id="progressBar"></div>
+          </div>
+
+          <div class="steps-list">
+            <div class="step-item" id="step1">
+              <div class="step-indicator">
+                <span class="step-number">1</span>
+              </div>
+              <div class="step-details">
+                <span class="step-name">Ekstraksi URL & Analisis Tautan</span>
+                <span class="step-desc">Mendeteksi ID Google Labs atau mengurai URL tautan video.</span>
+              </div>
+            </div>
+
+            <div class="step-item" id="step2">
+              <div class="step-indicator">
+                <span class="step-number">2</span>
+              </div>
+              <div class="step-details">
+                <span class="step-name">Unduh Media Sumber</span>
+                <span class="step-desc">Mengunduh file video MP4 ke sistem penyimpanan aman.</span>
+              </div>
+            </div>
+
+            <div class="step-item" id="step3">
+              <div class="step-indicator">
+                <span class="step-number">3</span>
+              </div>
+              <div class="step-details">
+                <span class="step-name">Penghapusan Watermark Server-side</span>
+                <span class="step-desc">Memproses metadata frame dan membersihkan watermark.</span>
+              </div>
+            </div>
+
+            <div class="step-item" id="step4">
+              <div class="step-indicator">
+                <span class="step-number">4</span>
+              </div>
+              <div class="step-details">
+                <span class="step-name">Rendisi & Hasil Akhir</span>
+                <span class="step-desc">Mengemas ulang video menjadi file bersih siap tayang.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Custom Error Panel -->
+        <div class="status-panel error" id="statusError">
+          <div class="status-panel-content">
+            <div class="status-panel-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"></polygon>
+                <line x1="12" y1="8" x2="12" y2="12"></line>
+                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+              </svg>
+            </div>
+            <div>
+              <div class="status-panel-title">Pemrosesan Gagal</div>
+              <div class="status-panel-desc" id="statusErrorText">Tautan tidak valid atau terjadi gangguan server. Silakan ulangi.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Modern Video Result Section -->
+        <div class="result-section" id="resultContainer">
+          <div class="result-title">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color: var(--accent);">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+              <polyline points="22 4 12 14.01 9 11.01"></polyline>
+            </svg>
+            Pratinjau Hasil Bersih
+          </div>
+
+          <div class="video-card-frame">
+            <video id="previewPlayer" controls playsinline></video>
+          </div>
+
+          <div class="button-group">
+            <a id="downloadVideoBtn" class="action-btn primary" href="#" download>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="7 10 12 15 17 10"></polyline>
+                <line x1="12" y1="15" x2="12" y2="3"></line>
+              </svg>
+              Unduh Video
+            </a>
+            <button id="copyUrlBtn" class="action-btn secondary">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+              </svg>
+              Salin Tautan Hasil
+            </button>
+            <a id="openTabBtn" class="action-btn secondary" target="_blank">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                <polyline points="15 3 21 3 21 9"></polyline>
+                <line x1="10" y1="14" x2="21" y2="3"></line>
+              </svg>
+              Buka di Tab Baru
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bento Grid Guidelines -->
+      <div class="bento-grid">
+        <!-- Card 1: Guide -->
+        <div class="bento-card">
+          <div class="bento-card-title">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color: var(--accent);">
+              <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+              <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+            </svg>
+            Panduan Penggunaan
+          </div>
+          <div class="guide-steps">
+            <div class="guide-step-item">
+              <div class="guide-step-num">1</div>
+              <div class="guide-step-content">
+                <h4>Salin Tautan Video</h4>
+                <p>Ambil tautan dari Google Labs Flow (atau tautan langsung MP4 mentah).</p>
+              </div>
+            </div>
+            <div class="guide-step-item">
+              <div class="guide-step-num">2</div>
+              <div class="guide-step-content">
+                <h4>Tempel & Bersihkan</h4>
+                <p>Masukkan tautan ke kolom input lalu klik tombol <b>Bersihkan Video</b>.</p>
+              </div>
+            </div>
+            <div class="guide-step-item">
+              <div class="guide-step-num">3</div>
+              <div class="guide-step-content">
+                <h4>Tonton & Unduh</h4>
+                <p>Gunakan pemutar video untuk pratinjau hasil, lalu unduh ke perangkat Anda.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 2: Features -->
+        <div class="bento-card">
+          <div class="bento-card-title">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color: var(--accent);">
+              <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+              <polyline points="2 17 12 22 22 17"></polyline>
+              <polyline points="2 12 12 17 22 12"></polyline>
+            </svg>
+            Kelebihan Server
+          </div>
+          <div class="features-list">
+            <div class="feature-item">
+              <svg class="feature-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+              </svg>
+              <div class="feature-text">
+                <h4>Pembersihan Heuristik AI</h4>
+                <p>Menghapus watermark di area sudut secara presisi tanpa merusak resolusi piksel asli.</p>
+              </div>
+            </div>
+            <div class="feature-item">
+              <svg class="feature-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+              </svg>
+              <div class="feature-text">
+                <h4>Sistem Instan & Cepat</h4>
+                <p>Pemrosesan backend teroptimalisasi langsung selesai dalam hitungan detik.</p>
+              </div>
+            </div>
+            <div class="feature-item">
+              <svg class="feature-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+              </svg>
+              <div class="feature-text">
+                <h4>Aman & Privat</h4>
+                <p>Video diproses sementara di cache server RAM dan langsung dihapus otomatis demi privasi.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <footer>
+      <p>&copy; 2026 Otomasi Premium Penghapus Watermark.</p>
+      <div class="footer-status">
+        <span class="footer-status-dot"></span>
+        Semua Sistem Beroperasi Normal
+      </div>
+    </footer>
+  </div>
+
+  <!-- Copied Toast Notification -->
+  <div class="toast-badge" id="copiedToast">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="20 6 9 17 4 12"></polyline>
+    </svg>
+    Tautan berhasil disalin ke clipboard!
+  </div>
+
+  <script>
+    // Elements
+    const urlInput = document.getElementById('videoUrlInput');
+    const clearInputBtn = document.getElementById('clearInputBtn');
+    const processBtn = document.getElementById('processVideoBtn');
+    
+    // Stepper elements
+    const progressStepper = document.getElementById('progressStepper');
+    const progressBar = document.getElementById('progressBar');
+    const stepperPercent = document.getElementById('stepperPercent');
+    const step1 = document.getElementById('step1');
+    const step2 = document.getElementById('step2');
+    const step3 = document.getElementById('step3');
+    const step4 = document.getElementById('step4');
+
+    // Status / Result elements
+    const statusError = document.getElementById('statusError');
+    const statusErrorText = document.getElementById('statusErrorText');
+    const resultContainer = document.getElementById('resultContainer');
+    const previewPlayer = document.getElementById('previewPlayer');
+    const downloadVideoBtn = document.getElementById('downloadVideoBtn');
+    const copyUrlBtn = document.getElementById('copyUrlBtn');
+    const openTabBtn = document.getElementById('openTabBtn');
+    const copiedToast = document.getElementById('copiedToast');
+
+    let currentProcessedUrl = "";
+
+    // Clear input utility
+    urlInput.addEventListener('input', () => {
+      clearInputBtn.style.display = urlInput.value.trim() ? 'flex' : 'none';
+    });
+
+    clearInputBtn.addEventListener('click', () => {
+      urlInput.value = '';
+      clearInputBtn.style.display = 'none';
+      urlInput.focus();
+    });
+
+    // Preset examples trigger
+    document.querySelectorAll('.example-tag').forEach(tag => {
+      tag.addEventListener('click', () => {
+        urlInput.value = tag.getAttribute('data-url');
+        clearInputBtn.style.display = 'flex';
+        // Auto trigger click with nice delay
+        setTimeout(() => {
+          processBtn.click();
+        }, 150);
+      });
+    });
+
+    // Clipboard copy action
+    copyUrlBtn.addEventListener('click', async () => {
+      if (!currentProcessedUrl) return;
+      
+      const fullUrl = window.location.origin + currentProcessedUrl;
+      try {
+        await navigator.clipboard.writeText(fullUrl);
+        // Show elegant toast
+        copiedToast.classList.add('show');
+        setTimeout(() => {
+          copiedToast.classList.remove('show');
+        }, 3000);
+      } catch (err) {
+        console.error('Gagal menyalin:', err);
+      }
+    });
+
+    // Stepper simulation state machine
+    let stepperInterval = null;
+    function runStepperSimulation() {
+      // Reset steps style
+      [step1, step2, step3, step4].forEach(step => {
+        step.className = 'step-item';
+        step.querySelector('.step-indicator').innerHTML = '<span class="step-number">' + step.id.replace('step', '') + '</span>';
+      });
+
+      progressStepper.style.display = 'block';
+      progressBar.style.width = '0%';
+      stepperPercent.textContent = '0%';
+
+      let progress = 0;
+      
+      const updateProgress = (targetPercent, activeStepId, completedSteps = []) => {
+        progressBar.style.width = targetPercent + '%';
+        stepperPercent.textContent = targetPercent + '%';
+
+        completedSteps.forEach(sId => {
+          const item = document.getElementById(sId);
+          item.className = 'step-item completed';
+          item.querySelector('.step-indicator').innerHTML = `
+            <span class="step-icon-completed">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+            </span>`;
+        });
+
+        if (activeStepId) {
+          const activeItem = document.getElementById(activeStepId);
+          activeItem.className = 'step-item active';
+          activeItem.querySelector('.step-indicator').innerHTML = '<span class="step-icon-active"></span>';
+        }
+      };
+
+      // Step 1: Immediate Active
+      updateProgress(10, 'step1');
+
+      let tickCount = 0;
+      stepperInterval = setInterval(() => {
+        tickCount++;
+        
+        if (tickCount === 6) { // ~1.2s
+          updateProgress(35, 'step2', ['step1']);
+        } else if (tickCount === 20) { // ~4s
+          updateProgress(65, 'step3', ['step1', 'step2']);
+        } else if (tickCount === 45) { // ~9s
+          // Slow down at 85% until actual server response finishes
+          updateProgress(85, 'step4', ['step1', 'step2', 'step3']);
+        }
+      }, 200);
+    }
+
+    function stopStepper(success) {
+      if (stepperInterval) {
+        clearInterval(stepperInterval);
+        stepperInterval = null;
+      }
+
+      if (success) {
+        progressBar.style.width = '100%';
+        stepperPercent.textContent = '100%';
+        
+        [step1, step2, step3, step4].forEach(step => {
+          step.className = 'step-item completed';
+          step.querySelector('.step-indicator').innerHTML = `
+            <span class="step-icon-completed">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+            </span>`;
+        });
+
+        setTimeout(() => {
+          progressStepper.style.display = 'none';
+        }, 600);
+      } else {
+        progressStepper.style.display = 'none';
+      }
+    }
+
+    // Process button trigger
+    processBtn.addEventListener('click', async () => {
+      const url = urlInput.value.trim();
+      if (!url) {
+        statusError.style.display = 'block';
+        statusErrorText.textContent = "Silakan masukkan URL video terlebih dahulu.";
+        resultContainer.style.display = 'none';
+        return;
+      }
+
+      // Hide previous states
+      statusError.style.display = 'none';
+      resultContainer.style.display = 'none';
+      processBtn.disabled = true;
+
+      // Start beautiful interactive step animation
+      runStepperSimulation();
+
+      try {
+        const response = await fetch('/api/process-video', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ url })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          stopStepper(true);
+          
+          currentProcessedUrl = data.processedUrl;
+          
+          setTimeout(() => {
+            resultContainer.style.display = 'block';
+            previewPlayer.src = data.processedUrl;
+            downloadVideoBtn.href = data.processedUrl;
+            openTabBtn.href = data.processedUrl;
+            
+            // Format nice dynamic output filename
+            const originalName = url.split('/').pop().split('?')[0] || 'video';
+            downloadVideoBtn.download = originalName.endsWith('.mp4') ? originalName : `bebas_watermark_${originalName}.mp4`;
+            
+            // Scroll results into view smoothly
+            resultContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          }, 850);
+
+        } else {
+          stopStepper(false);
+          statusError.style.display = 'block';
+          statusErrorText.textContent = data.error || "Gagal memproses video di server. Coba periksa kembali URL Anda.";
+        }
+      } catch (err) {
+        stopStepper(false);
+        statusError.style.display = 'block';
+        statusErrorText.textContent = "Koneksi ke server terputus atau terjadi kesalahan sistem.";
+        console.error(err);
+      } finally {
+        processBtn.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>

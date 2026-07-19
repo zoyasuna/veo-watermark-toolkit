@@ -1,0 +1,8 @@
+{
+  "name": "Penghapus Watermark Video",
+  "description": "Otomasi penghapus watermark video dengan antarmuka dan instruksi Bahasa Indonesia.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
