@@ -765,7 +765,7 @@ if (processVideoBtn) {
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ url })
+        body: JSON.stringify({ url, clientSide: true })
       });
 
       const data = await response.json();

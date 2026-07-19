@@ -266,7 +266,14 @@ async function serveStaticDevDist(rootDir = 'dist', defaultPort = 3000) {
             } else {
               // Fallback to fetching HTML and parsing meta tag
               console.log('🔄 Memulai pengambilan HTML untuk pencarian meta tag...');
-              const pageResponse = await fetch(url);
+              const pageResponse = await fetch(url, {
+                headers: {
+                  'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
+                  'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
+                  'Accept-Language': 'en-US,en;q=0.9',
+                  'Referer': 'https://labs.google/'
+                }
+              });
               if (!pageResponse.ok) {
                 throw new Error(`Gagal memuat halaman: ${pageResponse.status} ${pageResponse.statusText}`);
               }
@@ -287,6 +294,17 @@ async function serveStaticDevDist(rootDir = 'dist', defaultPort = 3000) {
             res.end(JSON.stringify({ success: false, error: 'Tautan Google Labs kedaluwarsa, tidak valid, atau tidak dapat diakses saat ini.' }));
             return;
           }
+        }
+
+        if (body.clientSide) {
+          console.log(`⚡ Client-side processing requested. Returning videoDirectUrl: ${videoDirectUrl}`);
+          res.writeHead(200, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({
+            success: true,
+            videoDirectUrl: videoDirectUrl,
+            runClientSide: true
+          }));
+          return;
         }
 
         const timestamp = Date.now();
@@ -336,6 +354,49 @@ async function serveStaticDevDist(rootDir = 'dist', defaultPort = 3000) {
           success: false,
           error: `Terjadi kesalahan sistem saat memproses video: ${err.message || String(err)}`
         }));
+      }
+      return;
+    }
+
+    // API endpoint for proxying video download
+    if (req.method === 'GET' && req.url.startsWith('/api/proxy-video')) {
+      try {
+        const urlObj = new URL(req.url, `http://${req.headers.host}`);
+        const targetUrl = urlObj.searchParams.get('url');
+
+        if (!targetUrl) {
+          res.writeHead(400, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ error: 'Missing url query parameter' }));
+          return;
+        }
+
+        console.log(`🔌 Proxying video on dev server from: ${targetUrl}`);
+        const response = await fetch(targetUrl, {
+          headers: {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
+            'Accept': '*/*',
+            'Accept-Language': 'en-US,en;q=0.9',
+            'Referer': 'https://labs.google/'
+          }
+        });
+        if (!response.ok) {
+          res.writeHead(response.status, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ error: `Failed to fetch video: ${response.statusText}` }));
+          return;
+        }
+
+        const contentType = response.headers.get('content-type');
+        res.writeHead(200, {
+          'Content-Type': contentType || 'video/mp4',
+          'Access-Control-Allow-Origin': '*'
+        });
+
+        const arrayBuffer = await response.arrayBuffer();
+        res.end(Buffer.from(arrayBuffer));
+      } catch (err) {
+        console.error('❌ Proxy error in build.js:', err);
+        res.writeHead(500, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: err.message || 'Error proxying video' }));
       }
       return;
     }
