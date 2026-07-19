@@ -1161,6 +1161,66 @@
       }
     }
 
+    // Message event listener to handle iframe processing state callbacks
+    let iframePromiseResolve = null;
+    let iframePromiseReject = null;
+
+    window.addEventListener('message', (event) => {
+      const data = event.data;
+      if (!data || typeof data !== 'object') return;
+
+      if (data.type === 'GWR_VIDEO_PROGRESS') {
+        const { progress, pct, label, status } = data;
+        
+        // Update steps dynamically based on progress
+        if (progress < 0.12) {
+          // Watermark detection phase
+          const detectPct = Math.round(50 + (progress / 0.12) * 20);
+          progressBar.style.width = detectPct + '%';
+          stepperPercent.textContent = detectPct + '%';
+          updateProgressOnly(detectPct, 'step3', ['step1', 'step2']);
+        } else {
+          // Watermark removal phase
+          const removalPct = Math.round(70 + ((progress - 0.12) / 0.88) * 30);
+          progressBar.style.width = removalPct + '%';
+          stepperPercent.textContent = removalPct + '%';
+          updateProgressOnly(removalPct, 'step4', ['step1', 'step2', 'step3']);
+        }
+      } else if (data.type === 'GWR_VIDEO_SUCCESS') {
+        if (iframePromiseResolve) {
+          iframePromiseResolve({
+            blob: data.blob,
+            processedUrl: data.processedUrl,
+            fileName: data.fileName
+          });
+        }
+      } else if (data.type === 'GWR_VIDEO_ERROR') {
+        if (iframePromiseReject) {
+          iframePromiseReject(new Error(data.error || 'Terjadi kesalahan saat memproses video.'));
+        }
+      }
+    });
+
+    // Helper to only update style/classes of steps without overriding everything
+    function updateProgressOnly(percent, activeStepId, completedSteps = []) {
+      completedSteps.forEach(sId => {
+        const item = document.getElementById(sId);
+        item.className = 'step-item completed';
+        item.querySelector('.step-indicator').innerHTML = `
+          <span class="step-icon-completed">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+          </span>`;
+      });
+
+      if (activeStepId) {
+        const activeItem = document.getElementById(activeStepId);
+        activeItem.className = 'step-item active';
+        activeItem.querySelector('.step-indicator').innerHTML = '<span class="step-icon-active"></span>';
+      }
+    }
+
     // Process button trigger
     processBtn.addEventListener('click', async () => {
       const url = urlInput.value.trim();
@@ -1176,10 +1236,23 @@
       resultContainer.style.display = 'none';
       processBtn.disabled = true;
 
-      // Start beautiful interactive step animation
-      runStepperSimulation();
+      // Start progress stepper list
+      progressStepper.style.display = 'block';
+      progressBar.style.width = '0%';
+      stepperPercent.textContent = '0%';
+      
+      // Reset steps style
+      [step1, step2, step3, step4].forEach(step => {
+        step.className = 'step-item';
+        step.querySelector('.step-indicator').innerHTML = '<span class="step-number">' + step.id.replace('step', '') + '</span>';
+      });
 
       try {
+        // Step 1: URL Extraction
+        updateProgressOnly(10, 'step1');
+        progressBar.style.width = '10%';
+        stepperPercent.textContent = '10%';
+
         const response = await fetch('/api/process-video', {
           method: 'POST',
           headers: {
@@ -1189,40 +1262,101 @@
         });
 
         const data = await response.json();
-
-        if (data.success) {
-          stopStepper(true);
-          
-          currentProcessedUrl = data.processedUrl;
-          
-          setTimeout(() => {
-            resultContainer.style.display = 'block';
-            previewPlayer.src = data.processedUrl;
-            downloadVideoBtn.href = data.processedUrl;
-            openTabBtn.href = data.processedUrl;
-            
-            // Format nice dynamic output filename
-            const originalName = url.split('/').pop().split('?')[0] || 'video';
-            downloadVideoBtn.download = originalName.endsWith('.mp4') ? originalName : `bebas_watermark_${originalName}.mp4`;
-            
-            // Scroll results into view smoothly
-            resultContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-          }, 850);
-
-        } else {
-          stopStepper(false);
-          statusError.style.display = 'block';
-          statusErrorText.textContent = data.error || "Gagal memproses video di server. Coba periksa kembali URL Anda.";
+        if (!data.success) {
+          throw new Error(data.error || "Gagal mengurai tautan video. Coba periksa kembali URL Anda.");
         }
+
+        const videoDirectUrl = data.videoDirectUrl;
+
+        // Step 2: Download Media Source
+        updateProgressOnly(25, 'step2', ['step1']);
+        progressBar.style.width = '25%';
+        stepperPercent.textContent = '25%';
+
+        const proxyUrl = `/api/proxy-video?url=${encodeURIComponent(videoDirectUrl)}`;
+        const videoResponse = await fetch(proxyUrl);
+        if (!videoResponse.ok) {
+          throw new Error("Gagal mengunduh file video dari server sumber.");
+        }
+
+        const reader = videoResponse.body.getReader();
+        const contentLength = +videoResponse.headers.get('Content-Length') || 0;
+        let receivedLength = 0;
+        let chunks = [];
+        
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          chunks.push(value);
+          receivedLength += value.length;
+          
+          if (contentLength) {
+            const dlPercent = Math.round((receivedLength / contentLength) * 100);
+            const step2Progress = Math.round(25 + (dlPercent * 0.25)); // Maps 0-100% to 25-50%
+            progressBar.style.width = step2Progress + '%';
+            stepperPercent.textContent = step2Progress + '%';
+          }
+        }
+
+        const videoBlob = new Blob(chunks, { type: 'video/mp4' });
+
+        // Step 3: Send file to iframe and wait for processing success
+        updateProgressOnly(50, 'step3', ['step1', 'step2']);
+        progressBar.style.width = '50%';
+        stepperPercent.textContent = '50%';
+
+        const iframe = document.getElementById('videoProcessorIframe');
+        const filename = url.split('/').pop().split('?')[0] || 'video.mp4';
+        
+        // Setup promise to wait for iframe response
+        const processingPromise = new Promise((resolve, reject) => {
+          iframePromiseResolve = resolve;
+          iframePromiseReject = reject;
+        });
+
+        iframe.contentWindow.postMessage({
+          type: 'PROCESS_VIDEO_BLOB',
+          blob: videoBlob,
+          filename: filename
+        }, '*');
+
+        // Wait for iframe processing
+        const result = await processingPromise;
+
+        // Step 4: Finished
+        stopStepper(true);
+        
+        // Generate processed local blob URL
+        if (currentProcessedUrl && currentProcessedUrl.startsWith('blob:')) {
+          URL.revokeObjectURL(currentProcessedUrl);
+        }
+        currentProcessedUrl = URL.createObjectURL(result.blob);
+
+        setTimeout(() => {
+          resultContainer.style.display = 'block';
+          previewPlayer.src = currentProcessedUrl;
+          downloadVideoBtn.href = currentProcessedUrl;
+          openTabBtn.href = currentProcessedUrl;
+          
+          const originalName = url.split('/').pop().split('?')[0] || 'video';
+          downloadVideoBtn.download = originalName.endsWith('.mp4') ? originalName : `bebas_watermark_${originalName}.mp4`;
+          
+          resultContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }, 850);
+
       } catch (err) {
         stopStepper(false);
         statusError.style.display = 'block';
-        statusErrorText.textContent = "Koneksi ke server terputus atau terjadi kesalahan sistem.";
+        statusErrorText.textContent = err.message || "Koneksi ke server terputus atau terjadi kesalahan sistem.";
         console.error(err);
       } finally {
         processBtn.disabled = false;
+        iframePromiseResolve = null;
+        iframePromiseReject = null;
       }
     });
   </script>
+  <!-- Hidden video processor iframe for serverless local browser execution -->
+  <iframe id="videoProcessorIframe" src="video-preview.html" style="display: none; width: 0; height: 0; border: none;"></iframe>
 </body>
 </html>

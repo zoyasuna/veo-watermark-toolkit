@@ -221,6 +221,16 @@ function setProgress(progress, label) {
     const pct = Number.isFinite(progress) ? Math.max(0, Math.min(100, Math.round(progress * 100))) : 0;
     els.progressBar.style.width = `${pct}%`;
     els.progressText.textContent = label || `${pct}%`;
+
+    if (window.parent && window.parent !== window) {
+        window.parent.postMessage({
+            type: 'GWR_VIDEO_PROGRESS',
+            progress: progress,
+            pct: pct,
+            label: label || `${pct}%`,
+            status: els.status.textContent
+        }, '*');
+    }
 }
 
 function yieldToBrowserFrame() {
@@ -663,9 +673,25 @@ async function runExport() {
             : '去水印已完成';
         const aiNote = '';
         setStatus(`${cleanupNote}，已处理 ${result.processedFrames} 帧。${audioNote}`, 'success');
+
+        if (window.parent && window.parent !== window) {
+            window.parent.postMessage({
+                type: 'GWR_VIDEO_SUCCESS',
+                blob: result.blob,
+                processedUrl: state.processedUrl,
+                fileName: els.downloadBtn.download
+            }, '*');
+        }
     } catch (error) {
         console.error(error);
         setStatus(error.message || '导出失败', 'error');
+
+        if (window.parent && window.parent !== window) {
+            window.parent.postMessage({
+                type: 'GWR_VIDEO_ERROR',
+                error: error.message || '导出失败'
+            }, '*');
+        }
     } finally {
         state.running = false;
         updateButtons();
@@ -881,3 +907,25 @@ async function init() {
 }
 
 init();
+
+// Handle cross-frame requests from index.html (automated flow)
+window.addEventListener('message', async (event) => {
+    const data = event.data;
+    if (!data || typeof data !== 'object') return;
+    if (data.type === 'PROCESS_VIDEO_BLOB') {
+        try {
+            const { blob, filename } = data;
+            const file = new File([blob], filename || 'video.mp4', { type: blob.type || 'video/mp4' });
+            await setFile(file);
+            await runExport();
+        } catch (err) {
+            console.error('Failed to process message file:', err);
+            if (window.parent && window.parent !== window) {
+                window.parent.postMessage({
+                    type: 'GWR_VIDEO_ERROR',
+                    error: err.message || 'Gagal memproses file di iframe.'
+                }, '*');
+            }
+        }
+    }
+});
