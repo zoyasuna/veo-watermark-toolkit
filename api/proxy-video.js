@@ -31,8 +31,24 @@ export default async function handler(req, res) {
       res.setHeader('content-type', contentType);
     }
     
-    const arrayBuffer = await response.arrayBuffer();
-    return res.status(200).send(Buffer.from(arrayBuffer));
+    // Stream response chunks directly to client to prevent timeout and excessive buffering
+    if (response.body && typeof response.body.getReader === 'function') {
+      const reader = response.body.getReader();
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        res.write(value);
+      }
+      res.end();
+    } else if (response.body) {
+      for await (const chunk of response.body) {
+        res.write(chunk);
+      }
+      res.end();
+    } else {
+      const arrayBuffer = await response.arrayBuffer();
+      res.send(Buffer.from(arrayBuffer));
+    }
   } catch (err) {
     console.error('❌ Proxy error:', err);
     return res.status(500).json({ error: err.message || 'Error proxying video' });

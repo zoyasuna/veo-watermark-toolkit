@@ -781,7 +781,16 @@ if (processVideoBtn) {
       const proxyUrl = `/api/proxy-video?url=${encodeURIComponent(videoDirectUrl)}`;
       const videoResponse = await fetch(proxyUrl);
       if (!videoResponse.ok) {
-        throw new Error("Gagal mengunduh file video dari server sumber.");
+        let errorDetail = "";
+        try {
+          const errData = await videoResponse.json();
+          if (errData && errData.error) {
+            errorDetail = ` (${errData.error})`;
+          }
+        } catch (e) {
+          errorDetail = ` (${videoResponse.status} ${videoResponse.statusText})`;
+        }
+        throw new Error(`Gagal mengunduh file video dari server sumber${errorDetail}.`);
       }
 
       const reader = videoResponse.body.getReader();
